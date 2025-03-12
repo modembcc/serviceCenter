@@ -18,7 +18,7 @@ app.get("/webhooks", (req, res) => {
   console.log("Received verification request:", { mode, token, challenge });
 
   // Check if the mode and token are correct
-  if (mode === "subscribe" && token === VERIFY_TOKEN) {
+  if (mode.trim() === "subscribe" && token.trim() === VERIFY_TOKEN) {
     console.log("Webhook verified successfully");
     res.status(200).send(challenge);
   } else {
