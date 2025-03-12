@@ -10,10 +10,12 @@ app.use(bodyParser.json());
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
 // Endpoint for Facebook webhook verification
-app.get("/webhook", (req, res) => {
+app.get("/webhooks", (req, res) => {
   const mode = req.query["hub.mode"];
   const token = req.query["hub.verify_token"];
   const challenge = req.query["hub.challenge"];
+
+  console.log("Received verification request:", { mode, token, challenge });
 
   // Check if the mode and token are correct
   if (mode === "subscribe" && token === VERIFY_TOKEN) {
@@ -26,7 +28,7 @@ app.get("/webhook", (req, res) => {
 });
 
 // Endpoint to receive event notifications
-app.post("/webhook", (req, res) => {
+app.post("/webhooks", (req, res) => {
   const body = req.body;
 
   // Check if this is a page subscription event
