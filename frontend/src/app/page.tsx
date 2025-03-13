@@ -1,5 +1,6 @@
 "use client";
 
+import { platform } from "os";
 import { useState, useEffect } from "react";
 
 interface Payload {
@@ -35,9 +36,7 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetchData(); // Initial fetch
-    const interval = setInterval(fetchData, 30000); // Refresh every 30 seconds
-    return () => clearInterval(interval); // Cleanup interval on unmount
+    fetchData();
   }, []);
 
   const handleTagSelection = (tag: string) => {
@@ -56,6 +55,21 @@ export default function Home() {
 
   const urgencyTags = ["urgent", "low_urgency"];
   const otherTags = allTags.filter((tag) => !urgencyTags.includes(tag));
+
+  // Mapping for platform-specific URLs
+  const platformUrlMapping: { [platform: string]: string } = {
+    messenger:
+      "https://business.facebook.com/latest/inbox/all/?nav_ref=manage_page_ap_plus_inbox_message_button&asset_id=591541020708265&mailbox_id=&selected_item_id=100006744826420&thread_type=FB_MESSAGE",
+    email: "https://mail.google.com/mail/u/0/#inbox",
+    default: "https://example.com",
+  };
+
+  // Function to get the URL based on the platform
+  const getPlatformUrl = (platform: string) => {
+    return (
+      platformUrlMapping[platform.toLowerCase()] || platformUrlMapping.default
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-8 text-black">
@@ -131,7 +145,13 @@ export default function Home() {
             </thead>
             <tbody className="divide-y divide-gray-200">
               {filteredPayloads.map((payload, index) => (
-                <tr key={index} className="hover:bg-gray-50">
+                <tr
+                  key={index}
+                  className="hover:bg-gray-50 cursor-pointer"
+                  onClick={() =>
+                    window.open(getPlatformUrl(payload.platform), "_blank")
+                  }
+                >
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {payload.platform}
                   </td>
