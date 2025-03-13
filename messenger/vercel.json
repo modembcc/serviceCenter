@@ -1,0 +1,8 @@
+{
+  "version": 2,
+  "rewrites": [{ "source": "/(.*)", "destination": "/api" }],
+  "env": {
+    "VERIFY_TOKEN": "c2dpbm5vc2VydmljZWNlbnRlcg",
+    "PORT": "5050"
+  }
+}

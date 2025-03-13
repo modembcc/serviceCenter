@@ -1,4 +1,3 @@
-require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
@@ -6,11 +5,15 @@ const app = express();
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
 
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
+
 // Facebook webhook verification token
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
 // Endpoint for Facebook webhook verification
-app.get("/webhooks", (req, res) => {
+app.get("/", (req, res) => {
   const mode = req.query["hub.mode"];
   const token = req.query["hub.verify_token"];
   const challenge = req.query["hub.challenge"];
@@ -18,7 +21,7 @@ app.get("/webhooks", (req, res) => {
   console.log("Received verification request:", { mode, token, challenge });
 
   // Check if the mode and token are correct
-  if (mode.trim() === "subscribe" && token.trim() === VERIFY_TOKEN) {
+  if (mode.trim() === "subscribe" && token === VERIFY_TOKEN) {
     console.log("Webhook verified successfully");
     res.status(200).send(challenge);
   } else {
@@ -63,7 +66,9 @@ function handleEvent(event) {
 }
 
 // Start the server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5050;
 app.listen(PORT, () => {
   console.log(`MessengerService is running on port ${PORT}`);
 });
+
+module.exports = app;
