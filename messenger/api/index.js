@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const axios = require("axios"); // Import axios for HTTP requests
 const app = express();
 
 // Middleware to parse JSON bodies
@@ -43,7 +44,7 @@ app.post("/", (req, res) => {
     handleEvent(body.value);
 
     // Return a 200 OK response to acknowledge receipt of the event
-    res.status(200).send("EVENT_RECEIVED");
+    res.status(200).send("OK");
   } else {
     // Return a 404 if the event is not recognized
     res.sendStatus(404);
@@ -51,7 +52,7 @@ app.post("/", (req, res) => {
 });
 
 // Function to handle the event
-function handleEvent(event) {
+async function handleEvent(event) {
   const { sender, recipient, timestamp, message } = event;
 
   console.log("Sender ID:", sender.id);
@@ -66,6 +67,22 @@ function handleEvent(event) {
     });
   } else {
     console.log("No commands found in the message.");
+  }
+
+  // Prepare the payload to send to localhost:5000
+  const payload = {
+    userid: sender.id,
+    timestamp: timestamp,
+    message: message.text,
+    platform: "messenger",
+  };
+
+  try {
+    // Send the payload to localhost:5000
+    const response = await axios.post("http://localhost:5000/new", payload);
+    console.log("Data sent to localhost:5000:", response.data);
+  } catch (error) {
+    console.error("Error sending data to localhost:5000:", error.message);
   }
 }
 

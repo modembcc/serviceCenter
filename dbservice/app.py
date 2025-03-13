@@ -15,7 +15,7 @@ def new_message():
     payload = request.json
 
     # Validate the payload
-    if not payload or 'message' not in payload or 'userid' not in payload or 'platform' not in payload:
+    if not payload or 'message' not in payload or 'userid' not in payload or 'platform' not in payload or 'timestamp' not in payload:
         return jsonify({"error": "Invalid payload"}), 400
 
     # Step 1: Send the message to localhost:4000
@@ -39,7 +39,8 @@ def new_message():
         "userid": payload['userid'],
         "platform": payload['platform'],
         "tags": tags,  # Now using 'tags'
-        "summary": summary
+        "summary": summary,
+        "timestamp": payload['timestamp']
     }
 
     # Step 4: Store the modified payload locally
