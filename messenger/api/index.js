@@ -31,7 +31,7 @@ app.get("/", (req, res) => {
 });
 
 // Endpoint to receive event notifications
-app.post("/webhooks", (req, res) => {
+app.post("/", (req, res) => {
   const body = req.body;
 
   // Check if this is a page subscription event
