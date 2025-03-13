@@ -33,35 +33,39 @@ app.get("/", (req, res) => {
 // Endpoint to receive event notifications
 app.post("/", (req, res) => {
   const body = req.body;
+  console.log(body);
 
-  // Check if this is a page subscription event
-  if (body.object === "page") {
-    body.entry.forEach((entry) => {
-      const webhookEvent = entry.messaging[0];
-      console.log("Received event:", webhookEvent);
+  // Check if this is a valid event
+  if (body.field === "messages") {
+    console.log("Received message event:", body.value);
 
-      // Handle the event (e.g., message, postback, etc.)
-      handleEvent(webhookEvent);
-    });
+    // Handle the event
+    handleEvent(body.value);
 
     // Return a 200 OK response to acknowledge receipt of the event
     res.status(200).send("EVENT_RECEIVED");
   } else {
-    // Return a 404 if the event is not from a page subscription
+    // Return a 404 if the event is not recognized
     res.sendStatus(404);
   }
 });
 
-// Function to handle different types of events
+// Function to handle the event
 function handleEvent(event) {
-  if (event.message) {
-    console.log("Received message:", event.message);
-    // Handle message event
-  } else if (event.postback) {
-    console.log("Received postback:", event.postback);
-    // Handle postback event
+  const { sender, recipient, timestamp, message } = event;
+
+  console.log("Sender ID:", sender.id);
+  console.log("Recipient ID:", recipient.id);
+  console.log("Timestamp:", timestamp);
+  console.log("Message:", message.text);
+
+  // Process commands if they exist
+  if (message.commands && message.commands.length > 0) {
+    message.commands.forEach((command, index) => {
+      console.log(`Command ${index + 1}:`, command.name);
+    });
   } else {
-    console.log("Unhandled event type:", event);
+    console.log("No commands found in the message.");
   }
 }
 
